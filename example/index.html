@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>title</title>
+		<link href="favicon.png" rel="icon" />
+		<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	</head>
+  <body>
+
+	<header class="navbar navbar-expand flex-column flex-md-row bg-light navbar-light shadow-sm">
+		<a class="navbar-brand" href="#">SAVE CSS</a>
+		<span class="navbar-text"><a href="https://github.com/servibilis">servibilis</a></span>
+	</header>
+
+
+	<div class="c1">
+		<div>
+			<div class="c2">
+				<div class="c3">
+					Et odio pellentesque diam volutpat commodo sed egestas egestas. Nunc sed augue lacus viverra vitae congue eu. Diam sit amet nisl suscipit adipiscing bibendum est ultricies. Laoreet non curabitur gravida arcu ac tortor dignissim convallis aenean. Tristique senectus et netus et malesuada fames ac turpis egestas. Semper risus in hendrerit gravida rutrum quisque non tellus orci. Risus ultricies tristique nulla aliquet enim tortor at auctor urna. Purus viverra accumsan in nisl. Ridiculus mus mauris vitae ultricies leo integer malesuada nunc. Arcu risus quis varius quam quisque id. Arcu dictum varius duis at.
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row m-3">
+		<div class="col-sm p-1">
+			<h6>FSCSS</h6>
+			<pre class="fscss">
+.c1{
+	margin:15px|30px|40px|50px;
+	--skip:1;
+	}
+pre{
+	background-color: #eee;
+	padding:10px;
+	font-size:12px;
+	}
+			</pre>
+		</div>
+		<div class="col-sm p-1">
+			<h6>SCSS</h6>
+			<pre class="scss">
+
+			</pre>
+		</div>
+		<div class="col-sm p-1">
+			<h6>CSS</h6>
+			<pre class="css">
+
+			</pre>
+		</div>
+	</div>
+
+
+<script src="sass.js"></script>
+<script src="../dist/fscss.js"></script>
+<script>
+	let sass = new Sass();
+	let style = document.createElement("style");
+	document.head.appendChild(style);
+	let f = new fscss({
+		array_class_exclude:['row','col-sm','p-1','m-3'],
+		progressive_sizes:[576,992,1200],
+		key_save_css:'F5',
+		show_save_button:true,
+		get_fscss:()=>document.querySelector(".fscss").innerText,
+		set_fscss:(fscss)=>{
+			document.querySelector(".fscss").innerText = fscss;
+			},
+		set_scss:(scss)=>{
+			document.querySelector(".scss").innerText = scss;
+			sass.compile(scss, function(result) {
+				document.querySelector(".css").innerText = result.text;
+				style.innerText = result.text;
+				});
+			document.querySelectorAll("*").forEach((e)=>{
+				e.removeAttribute('style');
+				e.dataset.mutation=0;
+				});
+			}
+		}
+		);
+	f.save();
+</script>
+</body>
+</html>

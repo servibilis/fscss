@@ -4,8 +4,19 @@ import * as parser from "./scss_parser.js"
 /**
  * save css styles from DevTools
  */
-export class fscss{
-
+export default class fscss{
+	/**
+	 * load file
+	 */
+	static getText(href,fn){
+		let request = new XMLHttpRequest();
+		request.open('GET', href, false);
+		request.send(null);
+		if (request.status === 200) {
+			return request.responseText;
+			}
+		return "";
+		}
 	/**
 	 * get new css props after mutation
 	 */
@@ -17,6 +28,9 @@ export class fscss{
 			if(typeof(style['style'])!="undefined"){
 				style = style['style'];
 				}
+			}
+		else{
+			return {};
 			}
 		if(Object.keys(style).length>0 && copystyle!=false && copystyle!="" ){
 			let aout = {};
@@ -33,61 +47,87 @@ export class fscss{
 			}
 		return style;
 		}
+	static getCustomProp(e,name){
+		let compStyle = window.getComputedStyle(e);
+		let v = compStyle.getPropertyValue(name);
+		if(e.parentElement!==null){
+			return window.getComputedStyle(e.parentElement).getPropertyValue(name)!=v?v:false;
+			}
+		return v;
+		}
 	/**
 	 * create array for create element selector, work recursive 
 	 */
-	static getSelectorForElement(e,prevsel=[],recursive=true,to_root=false){
-		if(to_root==false&&prevsel.length==0&&typeof(e.dataset.to_root)!='undefined'){
-			to_root=parseInt(e.dataset.to_root)==1;
+	static getSelectorForElement(e,array_class_exclude=[],prevsel=[],recursive=true,to_root=false){
+
+		// debugger;
+		let compStyle = window.getComputedStyle(e);
+
+		if(to_root==false&&prevsel.length==0){
+			to_root=parseInt(fscss.getCustomProp(e,'--to_root'))>0;
 			}
 		let tagName = e.tagName.toLowerCase();
-		let stop = typeof(e.dataset.stop)!='undefined'?parseInt(e.dataset.stop)==1:false;
-
+		let stop = parseInt(fscss.getCustomProp(e,'--stop'))>0;
 		if(recursive===true&&prevsel.length!=0){
-			let skip = typeof(e.dataset.skip)!='undefined'?parseInt(e.dataset.skip)==1:false;
+			let skip = parseInt(fscss.getCustomProp(e,'--skip'))>0;
 			if(skip===true||(to_root===true&&stop===false)){
-				return fscss.getSelectorForElement(e.parentElement,prevsel,recursive,to_root);
+				return fscss.getSelectorForElement(e.parentElement,array_class_exclude,prevsel,recursive,to_root);
 				}
 			}
-
 		if(tagName=='body'){
 			stop=true;
 			}
 
-		// let hover = e.parentElement.querySelector(':hover') === e;
-		// let active = e.parentElement.querySelector(':active') === e;
-		// let focus = e.parentElement.querySelector(':focus') === e;
-		// let visited = e.parentElement.querySelector(':visited') === e;
+		let prefix = fscss.getCustomProp(e,'--prefix');
+		let suffix = fscss.getCustomProp(e,'--suffix');
+		let add_tag = parseInt(fscss.getCustomProp(e,'--add_tag'))>0;
 
-		let prefix =typeof(e.dataset.prefix)!='undefined'?e.dataset.prefix.trim():false;
-		let suffix =typeof(e.dataset.suffix)!='undefined'?e.dataset.suffix.trim():false;
-		let add_tag = typeof(e.dataset.add_tag)!='undefined'?parseInt(e.dataset.add_tag)==1:false;
 		let selector = add_tag===true?tagName:"";
 		let id = e.id.trim();
+		let cl = e.className.toLowerCase().trim();
+
 		if(id!=""){
 			selector+="#"+id;
 			}
-		let cl = e.className.toLowerCase().trim();
-		if(cl!=""){
-			selector+="."+cl.replace(/\s+/g,".");
-			}
-		if(selector===""){
-			selector=tagName;
-			}
-		if(prefix!==false){
-			prefix = prefix.replace(/\s*['||"]\s*$/,"");
-			prefix = prefix.replace(/^\s*['||"]\s*          /,"");
-			selector = prefix+selector;
-			}
-		if(suffix!==false){
-			suffix = suffix.replace(/\s*['||"]\s*$/,"");
-			suffix = suffix.replace(/^\s*['||"]\s*                /,"");
-			selector = selector+suffix;
+		cl = cl.split(/\s+/);
+		for(let i  in cl){
+			if(cl[i]!="" && array_class_exclude.indexOf(cl[i])<0){
+				selector+="."+cl[i];
+				}
 			}
 
-		prevsel.unshift(selector);
+		// if(selector===""){
+		//     selector=tagName;
+		//     }
+		if(prefix!==false&&prefix!=""){
+			prefix = prefix.replace(/\s*['||"]\s*$/,"");
+			prefix = prefix.replace(/^\s*['||"]\s*/,"");
+			selector = prefix+selector;
+			}
+		if(suffix!==false&&suffix!=""){
+			suffix = suffix.replace(/\s*['||"]\s*$/,"");
+			suffix = suffix.replace(/^\s*['||"]\s*/,"");
+			selector += suffix;
+			}
+
+		// if(e.parentElement.querySelector(':active') === e){
+		//     selector+=":active";
+		//     }
+		// if(e.parentElement.querySelector(':focus') === e){
+		//     selector+=":focus";
+		//     }
+		// if(e.parentElement.querySelector(':visited') === e){
+		//     selector+=":visited";
+		//     }
+		// if(e.parentElement.querySelector(':hover') === e){
+		//     selector+=":hover";
+		//     }
+
+		if(selector!=""){
+			prevsel.unshift(selector);
+			}
 		if(recursive===true && stop===false){
-			return fscss.getSelectorForElement(e.parentElement,prevsel,recursive,to_root);
+			return fscss.getSelectorForElement(e.parentElement,array_class_exclude,prevsel,recursive,to_root);
 			}
 		return prevsel;
 		}
@@ -114,25 +154,24 @@ export class fscss{
 
 	/**
 	 * create instance for fscss
-	 * @param fn_get_fscss - get code fscss
-	 * @param fn_set_fscss - function for save fscss
-	 * @param fn_set_scss -  function for save scss
+	 * @param get_fscss - get code fscss
+	 * @param set_fscss - function for save fscss
+	 * @param set_scss -  function for save scss
 	 * @param show_save_button=false - show button with click run fn_set_fscss && fn_set_scss
 	 * @param key_save_css='F6' - button with key press run fn_set_fscss && fn_set_scss
-	 * @param array_class_exclude={}
+	 * @param array_class_exclude=[]
 	 * @param progressive_sizes=[576,768,992,1200] - we can set style like - font-size : 14px|16px|18px|20px|24px
 	 */
-	constructor(fn_get_fscss,
-		fn_set_fscss,
-		fn_set_scss=false,
-		front_end_side = true,
-		show_save_button=true,
-		key_save_css='F6',
-		array_class_exclude={},
-		progressive_sizes=[576,768,992,1200],
-		){
-		this.front_end_side = front_end_side;
-		this.controll_words = ['add_tag','stop','skip','to_root','prefix','suffix'];
+	constructor(props){
+		let fn_get_fscss = typeof props.get_fscss!="undefined"?props.get_fscss:false;
+		let fn_set_fscss = typeof props.set_fscss!="undefined"?props.set_fscss:false;
+		let fn_set_scss = typeof props.set_scss!="undefined"?props.set_scss:false;
+		let show_save_button = typeof props.show_save_button!="undefined"?props.show_save_button:true;
+		let key_save_css = typeof props.key_save_css!="undefined"?props.key_save_css:'F6';
+		let array_class_exclude = Array.isArray(props.array_class_exclude)===true?props.array_class_exclude:[];
+		let progressive_sizes = Array.isArray(props.progressive_sizes)===true?props.progressive_sizes:[576,768,992,1200];
+
+		this.controll_words = ['--add_tag','--stop','--skip','--to_root','--prefix','--suffix'];
 		// check fn_get_fscss
 		if((fn_get_fscss instanceof Function)===false){
 			throw "fn_get_fscss is not function";
@@ -161,43 +200,61 @@ export class fscss{
 		this.obj_mutations = []; // DOM nodes which have mutations
 		this.fname = Array.isArray(this.progressive_sizes)===true?"fscssprop":false;
 
-		if(this.front_end_side===true){
-			// init virtual styleSheets
-			this.init_styleSheets();
-			//init button
-			if(this.button===true){
-				this.init_button();
-				}
-			//action keyup
-			document.addEventListener('keyup',e => {
-				if(e.key.toLowerCase()==this.key_save_css){
-					this.save();
-					}
-				});
-			//save old attribute style
-			let elmnts = document.querySelectorAll('body,body *');
-			for(let ei=0;ei<elmnts.length;ei++){
-				if( typeof(elmnts[ei].attributes.style)!="undefined" ){
-					elmnts[ei].dataset.copystyle = elmnts[ei].getAttribute('style');
-					}
-				}
-			//mutations
-			let MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
-			this.dev_observer = new MutationObserver((mutations)=>{
-				mutations.forEach((mutation)=>{
-					if(mutation.attributeName=="style"){
-						mutation.target.dataset.mutation=1;
-						if(this.button==true){
-							document.getElementById('dev_save').className="show";
-							}
-						if(this.obj_mutations.indexOf(mutation.target)<0){
-							this.obj_mutations[this.obj_mutations.length] = mutation.target;
-							}
-						}
-					});
-				});
-			this.dev_observer.observe(document.body, {subtree: true, childList: true, attributes: true, attributeOldValue: true,attributeFilter: ["style"] });
+		this.copyStyleSheets()
+		//init button
+		if(this.button===true){
+			this.init_button();
 			}
+		//action keyup
+		document.addEventListener('keyup',e => {
+			if(e.key.toLowerCase()==this.key_save_css){
+				this.save();
+				}
+			});
+		//save old attribute style
+		let elmnts = document.querySelectorAll('body,body *');
+		for(let ei=0;ei<elmnts.length;ei++){
+			if( typeof(elmnts[ei].attributes.style)!="undefined" ){
+				elmnts[ei].dataset.copystyle = elmnts[ei].getAttribute('style');
+				}
+			}
+		//mutations
+		let MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+		this.dev_observer = new MutationObserver((mutations)=>{
+			mutations.forEach((mutation)=>{
+				// console.log(mutation);
+				if(mutation.attributeName=="style"){
+					mutation.target.dataset.mutation=1;
+					if(this.button==true){
+						document.getElementById('dev_save').className="show";
+						}
+					if(this.obj_mutations.indexOf(mutation.target)<0){
+						this.obj_mutations[this.obj_mutations.length] = mutation.target;
+						}
+					}
+				});
+			});
+		this.dev_observer.observe(document.body,{
+			subtree: true,
+			childList: true,
+			attributes: true,
+			attributeOldValue: true,
+			attributeFilter: ["style"]
+			});
+		}
+	copyStyleSheets(){
+		this.Sheets = [];
+		for(let i=0;i<document.styleSheets.length;i++){
+			let sheet = document.styleSheets[i];
+			this.Sheets[i] = {};
+			for( let j in sheet.rules ){
+				let selector = sheet.rules[j].selectorText;
+				if(typeof selector!="undefined"){
+					this.Sheets[i][selector] = sheet.rules[j].style.cssText;
+					}
+				}
+			}
+		// console.log( this.Sheets );
 		}
 	/**
 	 * create button for save changes
@@ -215,40 +272,9 @@ export class fscss{
 		btn.addEventListener("click",()=>{
 			if(confirm("save?")){
 				this.save();
+				document.getElementById('dev_save').className="";
 				}
 			});
-		}
-	/**
-	 * load original css text for styleSheets and init virtual sheets with control words
-	 */
-	init_styleSheets(){
-		this._styleSheets = [];
-		for(let i=0;i<document.styleSheets.length;i++){
-			let sheet = document.styleSheets[i];
-			let original_txt = "";
-			if( sheet.ownerNode.tagName.toLowerCase()=='style' ){
-				original_txt = sheet.ownerNode.innerText;
-				}
-			else if(sheet.ownerNode.tagName.toLowerCase()=='link'){
-				original_txt = fscss.getText(sheet.ownerNode.href);
-				}
-			if(original_txt!=""){
-				this._styleSheets.push(parser.scss_to_array(original_txt));
-				}
-			}
-		this.initDataControllwords();
-		}
-	/**
-	 * load file
-	 */
-	static getText(href,fn){
-		let request = new XMLHttpRequest();
-		request.open('GET', href, false);
-		request.send(null);
-		if (request.status === 200) {
-			return request.responseText;
-			}
-		return "";
 		}
 	/**
 	 * create scss text from array
@@ -274,44 +300,6 @@ export class fscss{
 		str = str.replace(/{;+/g,"{");
 		str = str.replace(/;+/g,";");
 		return str;
-		}
-	/**
-	 * init for all selectors from virtual sheets control words
-	 */
-	initDataControllwords(){
-		if(this.controll_words.length>0){
-			for(let i=0;i<this._styleSheets.length;i++){
-				this.initDataControllwords_forsheet(false,this._styleSheets[i]);
-				}
-			}
-		}
-	initDataControllwords_forsheet(sel,sheet,style){
-		if(Object.keys(sheet['style']).length>0 && sel!==false){
-			this.controll_words.map((word)=>{
-				if(typeof sheet['style'][word]!=='undefined'){
-					let tmparr = document.querySelectorAll(sel);
-					if(tmparr.length>0){
-						for(let j=0;j<tmparr.length;j++){
-							tmparr[j].dataset[word] = sheet['style'][word];
-							let attrstyle = tmparr[j].getAttribute('style');
-							attrstyle = attrstyle===null?"":attrstyle;
-							if(attrstyle!=""){
-								attrstyle = attrstyle.trim();
-								if(attrstyle[attrstyle.length-1]!=";"){
-									attrstyle += ";";
-									}
-								attrstyle = parser.scss_to_array(attrstyle);
-								}
-							attrstyle.style[word] = sheet['style'][word];
-							tmparr[j].setAttribute('style',this.array_to_css(attrstyle).replace(/\n/g,""));
-							}
-						}
-					}
-				});
-			}
-		for(let selchild in sheet['child']){
-			this.initDataControllwords_forsheet(selchild,sheet['child'][selchild]);
-			}
 		}
 	/**
 	 * create css prop 
@@ -364,7 +352,7 @@ export class fscss{
 		for(let i=0;i<this.obj_mutations.length;i++){
 			let obj = this.obj_mutations[i];
 			if(parseInt(obj.dataset.mutation)===1){
-				let selector = fscss.getSelectorForElement(obj);
+				let selector = fscss.getSelectorForElement(obj,this.array_class_exclude);
 				let styles = fscss.get_css_properties_for_element(obj);
 				let l = selector.length;
 				if(Object.keys(styles).length>0 && l>0){
@@ -391,22 +379,67 @@ export class fscss{
 			let body = "#{$name}:#{$def};";
 			for(let j=0;j<this.progressive_sizes.length;j++){
 				let sz = this.progressive_sizes[j];
-				fntxt+=",$p"+sz+":null";
-				body+=" @if $p"+sz+"!=null { @media (min-width:"+sz+"px){ #{\$name}:#{\$p"+sz+"}; } } "
+				fntxt+=", $p"+sz+":null";
+				body+="\n\t@if $p"+sz+"!=null {\n\t\t@media (min-width:"+sz+"px){ #{\$name}:#{\$p"+sz+"}; } \n\t\t} "
 				}
-			fntxt+="){ "+body+" }";
+			fntxt+="){\n\t"+body+" \n\t}";
 			}
 		return fntxt;
+		}
+
+	static getElementBySelector(el,arr,j){
+		if(j>=arr.length){
+			return el;
+			}
+		if(typeof el.child[arr[j]] !="undefined"){
+			return fscss.getElementBySelector(el.child[arr[j]],arr,j+1);
+			}
+		return false;
 		}
 	/**
 	 * run save all - fscss - scss
 	 */
 	save(){
 		let new_fscss = parser.scss_to_array(this.get());
-		if(this.front_end_side===true){
-			this.applyMutations(new_fscss);
-			this.set_fscss(this.array_to_css(new_fscss,false));
+		// apply changing in old selectors
+		for(let i=0;i<document.styleSheets.length;i++){
+			let sheet = document.styleSheets[i];
+			if(typeof this.Sheets[i] !="undefined"){
+				for( let j in sheet.rules ){
+					let selector = sheet.rules[j].selectorText;
+					if(typeof selector=="undefined"){
+						continue;
+						}
+					let el = fscss.getElementBySelector(new_fscss,selector.split(/\s+/),0);
+					if(el!==false){
+						let oldCssText = this.Sheets[i][selector];
+						if(typeof oldCssText !="undefined"){
+							let newCssText = sheet.rules[j].style.cssText;
+							if(oldCssText!=newCssText){
+								oldCssText = parser.scss_to_array(oldCssText);
+								newCssText = parser.scss_to_array(newCssText);
+								let changedStyles = {};
+								let ln = 0;
+								for(let prop in newCssText.style){
+									if(newCssText.style[prop]!=oldCssText.style[prop]){
+										changedStyles[prop] = newCssText.style[prop];
+										ln+=1;
+										}
+									}
+								if(ln>0){
+									for(let prop in changedStyles){
+										el.style[prop] = changedStyles[prop];
+										}
+									}
+								}
+							}
+						}
+					}
+				}
 			}
+		// apply style mutations
+		this.applyMutations(new_fscss);
+		this.set_fscss(this.array_to_css(new_fscss,false));
 		this.save_scss(new_fscss);
 		}
 	/**
