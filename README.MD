@@ -10,8 +10,10 @@ Here's the [demo](https://servibilis.github.io/fscss/example/index.html).
 
 # progressive enhancement / graceful degradation
 Значение свойств  можно указывать в виде :
+```css
 	font-size:10px|12px|14px|16px|18px
 	font-size:10px|||16px|18px
+```
 
 что будет преобразовано в
 	@include fscssprop(font-size,10px,12px,14px,16px,18px);
@@ -152,6 +154,7 @@ if in .c3 stop=1
 	}
 
 если стили у .c3, --suffix : 'xxxx' у .c3
+
 .page{
 	.c1{
 		.c2{
@@ -170,7 +173,7 @@ if in .c3 stop=1
 # how to use
 
 Вот код примера
-
+```javascript
 <script src="../dist/fscss.js"></script>
 <script>
 	let sass = new Sass(); // для компиляции sass в браузере
@@ -205,6 +208,6 @@ if in .c3 stop=1
 		);
 	f.save();
 </script>
-
+```
 
 
