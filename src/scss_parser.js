@@ -132,9 +132,9 @@ export function scss_to_array(txt){
 		if(body.length>0){
 			// search childs
 			name = trim(name.substring(prev_pos,l));
-			let arrchild = this.scss_to_array(body);
+			let arrchild = scss_to_array(body);
 			// merge old and new styles
-			styles['child'][name] = (name in styles['child'])===false?arrchild:this.merge(styles['child'][name],arrchild);
+			styles['child'][name] = (name in styles['child'])===false?arrchild:merge(styles['child'][name],arrchild);
 			}
 		else{
 			// if body like font-size:14px without ; and kids
@@ -175,7 +175,7 @@ export function merge(oldarr,newarr){
 			oldarr['child'][sel] = newarr['child'][sel];
 			}
 		else{
-			oldarr['child'][sel] = this.merge(oldarr['child'][sel],newarr['child'][sel]);
+			oldarr['child'][sel] = merge(oldarr['child'][sel],newarr['child'][sel]);
 			}
 		}
 	return oldarr;
