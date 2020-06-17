@@ -1,0 +1,29 @@
+{
+  "name": "fast-css",
+  "version": "1.0.0",
+  "description": "save css from console",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rm dist/fscss.js",
+    "build-dev": "webpack -d -w --mode development",
+    "build-prod": "webpack -p --mode production"
+  },
+  "author": "Kulyk Andrii",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.10.2",
+    "@babel/preset-env": "^7.10.2",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.1.0",
+    "babel-preset-env": "^1.7.0",
+    "browser-sync-webpack-plugin": "^2.2.2",
+    "css-loader": "^3.5.3",
+    "node-sass": "^4.14.1",
+    "sass-loader": "^8.0.2",
+    "style-loader": "^1.2.1",
+    "webpack": "^4.43.0"
+  },
+  "dependencies": {
+    "axios": "^0.19.2"
+  }
+}

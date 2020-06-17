@@ -5,7 +5,7 @@ save CSS changes of Styles panel of Google Chrome Developer Tools
 После внесения изменений в Styles в element.style или в свойствах классов ( только те которые имеются в файле с которым работаем ) по нажатию на F6 ( по умолчанию ) или кнопки save происходит сохранение стилей.
 
 ## Demo (example)
-Here's the [demo](https://servibilis.github.io/fscss/index.html).
+Here's the [demo](https://servibilis.github.io/fscss/example/index.html).
 
 
 # progressive enhancement / graceful degradation
