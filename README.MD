@@ -8,18 +8,20 @@ save CSS changes of Styles panel of Google Chrome Developer Tools
 Here's the [demo](https://servibilis.github.io/fscss/example/index.html).
 
 
-# progressive enhancement / graceful degradation
+## progressive enhancement / graceful degradation
 Значение свойств  можно указывать в виде :
-```css
+```scss
 	font-size:10px|12px|14px|16px|18px
 	font-size:10px|||16px|18px
 ```
-
 что будет преобразовано в
+```scss
 	@include fscssprop(font-size,10px,12px,14px,16px,18px);
 	@include fscssprop(font-size,10px,null,null,16px,18px);
+```
 
 Код миксины fscssprop, она генерируется под указанную размерную сетку
+```scss
 	@mixin fscssprop($name,$def,$p576:null,$p768:null,$p992:null,$p1200:null){
 		#{$name}:#{$def};
 		@if $p576!=null {
@@ -43,25 +45,24 @@ Here's the [demo](https://servibilis.github.io/fscss/example/index.html).
 				}
 			}
 		}
-
+```
 Размерная сетка по умолчанию 576,768,992,1200, но ее можно переопределить во время инициализации.
 
-
-# сохранение в виде дерева scss
+## сохранение в виде дерева scss
 Управление глубиной вложений селекторов и видом самих селекторов введены css свойства
 
 Введены вот такие сойства
+```
 --add_tag : 0||1||2||..  //добавить в селектор имя тега
 --stop : 0||1||2||.. // остановить создание селектора на данном теге
 --skip : 0||1||2||.. // пропустить данный тег в создание конечного селектора
 --to_root : 0||1||2||.. //пропустить с текущего тега все теги в создании селектора, до первого найденного --stop или body
 --prefix :"string"//добавить в селектор префикс
 --suffix :"string" //добавить в селектор суффикс
-
-
-
+```
 
 Например, допустим мы будем работать с вот таким DOM-деревом
+```html
 <body class="page">
 	<div class="c1">
 		<div>
@@ -73,8 +74,10 @@ Here's the [demo](https://servibilis.github.io/fscss/example/index.html).
 		</div>
 	</div>
 </body>
+```
 
 Если мы укажем стили для .c3, то дерево будет иметь вид
+```scss
 .page{
 	.c1{
 		.c2{
@@ -84,23 +87,28 @@ Here's the [demo](https://servibilis.github.io/fscss/example/index.html).
 			}
 		}
 	}
+```
 
 если у .c3 будет указан --stop=1
-if in .c3 stop=1
-	.c3{
-		--stop:1;
-		some:style;
-		}
+```scss
+.c3{
+	--stop:1;
+	some:style;
+	}
+```
 
 если стили у .c3, --stop:1 у .c2
+```scss
 .c2{
 	--stop=1
 	.c3{
 		some:style;
 		}
 	}
+```
 
 если стили у .c3, --skip:1 у .c1
+```scss
 .page{
 	.c1{
 		--skip:1;
@@ -111,15 +119,20 @@ if in .c3 stop=1
 			}
 		}
 	}
+```
 
 если стили у .c3, --to_root:1 у .c3
+```scss
 .page{
 	.c3{
 		--to_root:1;
 		some:style;
 		}
 	}
+```
+
 если стили у .c3, --to_root:1 у .c2
+```scss
 .page{
 	.c2{
 		--to_root:1;
@@ -128,8 +141,10 @@ if in .c3 stop=1
 			}
 		}
 	}
+```
 
 если стили у .c3, --add_tag:1 у .c3 и у .c1
+```scss
 .page{
 	div.c1{
 		.c2{
@@ -140,8 +155,10 @@ if in .c3 stop=1
 			}
 		}
 	}
+```
 
 если стили у .c3, --prefix : 'xxxx' у .c3
+```scss
 .page{
 	.c1{
 		.c2{
@@ -152,9 +169,11 @@ if in .c3 stop=1
 			}
 		}
 	}
+```
 
 если стили у .c3, --suffix : 'xxxx' у .c3
 
+```scss
 .page{
 	.c1{
 		.c2{
@@ -165,6 +184,7 @@ if in .c3 stop=1
 			}
 		}
 	}
+```
 
 Сохраняются стили только из атрибута style или изменения у классов которые содержатся в файле стилей с которым работем.
 
