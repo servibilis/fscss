@@ -192,7 +192,7 @@ Here's the [demo](https://servibilis.github.io/fscss/example/index.html).
 
 # how to use
 
-Вот код примера
+Вот код примера [demo](https://servibilis.github.io/fscss/example/index.html).
 ```javascript
 <script src="../dist/fscss.js"></script>
 <script>
