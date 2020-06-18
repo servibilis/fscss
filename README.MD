@@ -241,8 +241,7 @@ Here is an example code and [demo page](https://servibilis.github.io/fscss/examp
 				e.dataset.mutation=0;
 				});
 			}
-		}
-		);
+		});
 	f.save();
 </script>
 ```
