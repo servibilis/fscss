@@ -9,39 +9,39 @@ Here's the [demo](https://servibilis.github.io/fscss/example/index.html).
 ## progressive enhancement / graceful degradation
 The value of the properties can be specified in the form:
 ```scss
-	font-size:10px|12px|14px|16px|18px
-	font-size:10px|||16px|18px
+font-size:10px|12px|14px|16px|18px
+font-size:10px|||16px|18px
 ```
 and will be converted to:
 ```scss
-	@include fscssprop(font-size,10px,12px,14px,16px,18px);
-	@include fscssprop(font-size,10px,null,null,16px,18px);
+@include fscssprop(font-size,10px,12px,14px,16px,18px);
+@include fscssprop(font-size,10px,null,null,16px,18px);
 ```
 The mixin code that is generated for the specified grid:
 ```scss
-	@mixin fscssprop($name,$def,$p576:null,$p768:null,$p992:null,$p1200:null){
-		#{$name}:#{$def};
-		@if $p576!=null {
-			@media (min-width:576px){
-				#{$name}:#{$p576};
-				}
-			}
-		@if $p768!=null {
-			@media (min-width:768px){
-				#{$name}:#{$p768};
-				}
-			}
-		@if $p992!=null {
-			@media (min-width:992px){
-				#{$name}:#{$p992};
-				}
-			}
-		@if $p1200!=null {
-			@media (min-width:1200px){
-				#{$name}:#{$p1200};
-				}
+@mixin fscssprop($name,$def,$p576:null,$p768:null,$p992:null,$p1200:null){
+	#{$name}:#{$def};
+	@if $p576!=null {
+		@media (min-width:576px){
+			#{$name}:#{$p576};
 			}
 		}
+	@if $p768!=null {
+		@media (min-width:768px){
+			#{$name}:#{$p768};
+			}
+		}
+	@if $p992!=null {
+		@media (min-width:992px){
+			#{$name}:#{$p992};
+			}
+		}
+	@if $p1200!=null {
+		@media (min-width:1200px){
+			#{$name}:#{$p1200};
+			}
+		}
+	}
 ```
 The default size grid is 576,768,992,1200, but it can be overridden during initialization.
 
