@@ -6,7 +6,7 @@ After making changes to Styles in element.style or in the properties of classes 
 ## Demo (example)
 Here's the [demo](https://servibilis.github.io/fscss/example/index.html).
 
-## progressive enhancement / graceful degradation
+## Progressive enhancement / graceful degradation
 The value of the properties can be specified in the form:
 ```scss
 font-size:10px|12px|14px|16px|18px
@@ -45,7 +45,7 @@ The mixin code that is generated for the specified grid:
 ```
 The default size grid is 576,768,992,1200, but it can be overridden during initialization.
 
-## save as scss tree
+## Save as scss tree
 For control of the depth of attachments of selectors and the view of selectors introduced css properties:
 ```
 --add_tag : 0||1||2||..   // add a tag name to the selector, processed if value > 0
@@ -202,7 +202,7 @@ for everything to work, you need to specify a .c2 value for --add_tag distinct f
 		}
 	}
 ```
-## how to use
+## How to use
 Here is an example code and [demo page](https://servibilis.github.io/fscss/example/index.html).
 ```javascript
 <script src="../dist/fscss.js"></script>
