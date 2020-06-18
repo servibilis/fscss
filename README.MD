@@ -45,7 +45,7 @@ The mixin code that is generated for the specified grid:
 ```
 The default size grid is 576,768,992,1200, but it can be overridden during initialization.
 
-## save as sass tree
+## save as scss tree
 For control of the depth of attachments of selectors and the view of selectors introduced css properties:
 ```
 --add_tag : 0||1||2||..   // add a tag name to the selector, processed if value > 0
@@ -171,6 +171,7 @@ if --suffix: 'xxxx' for .c3
 	}
 ```
 Styles are saved only from the style attribute or changes to classes that are contained in the styles file we are working with.
+
 Since in css properties of the form --prop are inherited, and in order to make them non-inheritable, only those values that differ from the values of this property for the parent nodes are processed.
 
 if --add_tag:1 for .c2 and .c1
@@ -211,16 +212,23 @@ Here is an example code and [demo page](https://servibilis.github.io/fscss/examp
 	document.head.appendChild(style);
 	// initiation
 	let f = new fscss({
-		array_class_exclude:['row','col-sm','p-1','m-3'], 	// classes that will not be used when creating the selector
-		progressive_sizes:[576,992,1200], 					// grid for progressive enhancement / graceful degradation
-		key_save_css:'F5', 									// button to save
-		show_save_button:true, 								// show button to save on page
-		get_fscss:()=>document.querySelector(".fscss").innerText, // function that should return fscss code from somewhere
-		set_fscss:(fscss)=>{ // handler to which fscss code is sent
+		// classes that will not be used when creating the selector
+		array_class_exclude:['row','col-sm','p-1','m-3'],
+		// grid for progressive enhancement / graceful degradation
+		progressive_sizes:[576,992,1200],
+		// button to save
+		key_save_css:'F5',
+		// show button to save on page
+		show_save_button:true,
+		// function that should return fscss code from somewhere
+		get_fscss:()=>document.querySelector(".fscss").innerText,
+		// handler to which fscss code is sent
+		set_fscss:(fscss)=>{
 			// in this function you need to save the fscss code somewhere
 			document.querySelector(".fscss").innerText = fscss;
 			},
-		set_scss:(scss)=>{ // the handler to which the scss code is sent
+			// the handler to which the scss code is sent
+		set_scss:(scss)=>{
 			// in this function, you need to save the scss code somewhere
 			document.querySelector(".scss").innerText = scss;
 			// in the example, css code is compiled immediately and the stylesheet is updated
