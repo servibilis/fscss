@@ -68,15 +68,17 @@ export default class fscss{
 			}
 		let tagName = e.tagName.toLowerCase();
 		let stop = parseInt(fscss.getCustomProp(e,'--stop'))>0;
+		if(tagName=='body'){
+			stop=true;
+			}
+
 		if(recursive===true&&prevsel.length!=0){
 			let skip = parseInt(fscss.getCustomProp(e,'--skip'))>0;
 			if(skip===true||(to_root===true&&stop===false)){
 				return fscss.getSelectorForElement(e.parentElement,array_class_exclude,prevsel,recursive,to_root);
 				}
 			}
-		if(tagName=='body'){
-			stop=true;
-			}
+
 
 		let prefix = fscss.getCustomProp(e,'--prefix');
 		let suffix = fscss.getCustomProp(e,'--suffix');
@@ -96,9 +98,9 @@ export default class fscss{
 				}
 			}
 
-		// if(selector===""){
-		//     selector=tagName;
-		//     }
+		if(selector==="" && prevsel.length===0 ){
+			selector=tagName;
+			}
 		if(prefix!==false&&prefix!=""){
 			prefix = prefix.replace(/\s*['||"]\s*$/,"");
 			prefix = prefix.replace(/^\s*['||"]\s*/,"");

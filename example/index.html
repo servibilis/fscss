@@ -18,7 +18,22 @@
 		<div>
 			<div class="c2">
 				<div class="c3">
-					Et odio pellentesque diam volutpat commodo sed egestas egestas. Nunc sed augue lacus viverra vitae congue eu. Diam sit amet nisl suscipit adipiscing bibendum est ultricies. Laoreet non curabitur gravida arcu ac tortor dignissim convallis aenean. Tristique senectus et netus et malesuada fames ac turpis egestas. Semper risus in hendrerit gravida rutrum quisque non tellus orci. Risus ultricies tristique nulla aliquet enim tortor at auctor urna. Purus viverra accumsan in nisl. Ridiculus mus mauris vitae ultricies leo integer malesuada nunc. Arcu risus quis varius quam quisque id. Arcu dictum varius duis at.
+					Allows you to save changes to css styles in Developer Tools to a remote server as scss. After making changes to Styles in element.style or in the properties of classes (only those that are in the file we are working with) by pressing F6 (by default) or the save button, the styles are saved.<br/>
+					The value of the properties can be specified in the form:<br/>
+					<pre>font-size:10px|12px|14px|16px|18px<br/>font-size:10px|||16px|18px</pre>
+					and will be converted to:
+					<pre>@include fscssprop(font-size,10px,12px,14px,16px,18px);<br/>@include fscssprop(font-size,10px,null,null,16px,18px);</pre>
+					The default size grid is 576,768,992,1200, but it can be overridden during initialization.<br/>
+					For control of the depth of attachments of selectors and the view of selectors introduced css properties:</br>
+<pre>
+--add_tag : 0||1||2||..   // add a tag name to the selector, processed if value > 0
+--stop : 0||1||2||..      // stop creating a selector on this tag, processed if value > 0
+--skip : 0||1||2||..      // skip this tag in selector creation, processed if value > 0
+--to_root : 0||1||2||..   // skip from the current tag all tags in the selector creation to the first --stop or body found, processed if value > 0
+--prefix :"string"        // add prefix to selector
+--suffix :"string"        // add suffix to selector
+</pre>
+<strong>Open dev tools and try, after saving you will immediately see the result from below.</strong>
 				</div>
 			</div>
 		</div>
@@ -29,8 +44,7 @@
 			<h6>FSCSS</h6>
 			<pre class="fscss">
 .c1{
-	margin:15px|30px|40px|50px;
-	--skip:1;
+	margin:15px|20px|25px|30px;
 	}
 pre{
 	background-color: #eee;
@@ -79,10 +93,10 @@ pre{
 				document.querySelector(".css").innerText = result.text;
 				style.innerText = result.text;
 				});
-			document.querySelectorAll("*").forEach((e)=>{
-				e.removeAttribute('style');
-				e.dataset.mutation=0;
-				});
+			//document.querySelectorAll("*").forEach((e)=>{
+			//	e.removeAttribute('style');
+			//	e.dataset.mutation=0;
+			//	});
 			}
 		}
 		);
