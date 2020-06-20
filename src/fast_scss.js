@@ -8,7 +8,7 @@ export default class fscss{
 	/**
 	 * load file
 	 */
-	static getText(href,fn){
+	static getText(href){
 		let request = new XMLHttpRequest();
 		request.open('GET', href, false);
 		request.send(null);
@@ -172,8 +172,8 @@ export default class fscss{
 		let key_save_css = typeof props.key_save_css!="undefined"?props.key_save_css:'F6';
 		let array_class_exclude = Array.isArray(props.array_class_exclude)===true?props.array_class_exclude:[];
 		let progressive_sizes = Array.isArray(props.progressive_sizes)===true?props.progressive_sizes:[576,768,992,1200];
-
 		this.controll_words = ['--add_tag','--stop','--skip','--to_root','--prefix','--suffix'];
+
 		// check fn_get_fscss
 		if((fn_get_fscss instanceof Function)===false){
 			throw "fn_get_fscss is not function";
@@ -402,7 +402,18 @@ export default class fscss{
 	 * run save all - fscss - scss
 	 */
 	save(){
-		let new_fscss = parser.scss_to_array(this.get());
+		Promise.resolve(this.get()).then((v)=>this.save_then(v));
+		}
+	save_then(txtfscss){
+		if(typeof txtfscss!="string"){
+			if(typeof txtfscss.data=="string"){
+				txtfscss = txtfscss.data;
+				}
+			else{
+				throw "get fscss function should return a string or Object with param data (for support axios) "
+				}
+			}
+		let new_fscss = parser.scss_to_array(txtfscss);
 		// apply changing in old selectors
 		for(let i=0;i<document.styleSheets.length;i++){
 			let sheet = document.styleSheets[i];

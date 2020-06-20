@@ -1,0 +1,17 @@
+
+.c1{
+	padding:10px|20px|30px|40px;
+	--stop:1;
+	.c2{
+		margin:20px;
+		.c3{
+			line-height:1.5;
+			}
+		}
+	strong{
+		--to_root:1;
+		line-height:2;
+		font-size:24px;
+		color:blue;
+		}
+	}

@@ -1,0 +1,29 @@
+@mixin fscssprop($name,$def, $p576:null, $p992:null, $p1200:null){
+	#{$name}:#{$def};
+	@if $p576!=null {
+		@media (min-width:576px){ #{$name}:#{$p576}; } 
+		} 
+	@if $p992!=null {
+		@media (min-width:992px){ #{$name}:#{$p992}; } 
+		} 
+	@if $p1200!=null {
+		@media (min-width:1200px){ #{$name}:#{$p1200}; } 
+		}  
+	}
+
+.c1{
+	@include fscssprop(padding,10px,20px,30px,40px);
+	--stop:1;
+	.c2{
+		margin:20px;
+		.c3{
+			line-height:1.5;
+			}
+		}
+	strong{
+		--to_root:1;
+		line-height:2;
+		font-size:24px;
+		color:blue;
+		}
+	}

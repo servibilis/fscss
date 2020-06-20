@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>title</title>
+		<link href="favicon.png" rel="icon" />
+		<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	</head>
+  <body>
+
+	<header class="navbar navbar-expand flex-column flex-md-row bg-light navbar-light shadow-sm">
+		<a class="navbar-brand" href="https://servibilis.github.io/fscss/">FCSS</a>
+		<span class="navbar-text"><a href="https://github.com/servibilis">servibilis</a></span>
+	</header>
+
+
+	<div class="c1">
+		<div>
+			<div class="c2">
+				<div class="c3">
+Allows you to save changes to css styles in Developer Tools to a remote server as scss. After making changes to Styles in element.style or in the properties of classes (only those that are in the file we are working with) by pressing F6 (by default) or the save button, the styles are saved.<br/>
+The value of the properties can be specified in the form:<br/>
+<pre>font-size:10px|12px|14px|16px|18px<br/>font-size:10px|||16px|18px</pre>
+and will be converted to:
+<pre>@include fscssprop(font-size,10px,12px,14px,16px,18px);<br/>@include fscssprop(font-size,10px,null,null,16px,18px);</pre>
+The default size grid is 576,768,992,1200, but it can be overridden during initialization.<br/>
+For control of the depth of attachments of selectors and the view of selectors introduced css properties:</br>
+<pre>
+--add_tag : 0||1||2||..   // add a tag name to the selector, processed if value > 0
+--stop : 0||1||2||..      // stop creating a selector on this tag, processed if value > 0
+--skip : 0||1||2||..      // skip this tag in selector creation, processed if value > 0
+--to_root : 0||1||2||..   // skip from the current tag all tags in the selector creation to the first --stop or body found, processed if value > 0
+--prefix :"string"        // add prefix to selector
+--suffix :"string"        // add suffix to selector
+</pre>
+<strong>Open dev tools and try, after saving you will immediately see the result from below.</strong>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+
+	<div class="row m-3">
+		<div class="col-sm p-1">
+			<h6>FSCSS</h6>
+			<pre class="fscss">
+.c1{
+	margin:15px|20px|25px|30px;
+	}
+pre{
+	background-color: #eee;
+	padding:10px;
+	font-size:12px;
+	}
+			</pre>
+		</div>
+		<div class="col-sm p-1">
+			<h6>SCSS</h6>
+			<pre class="scss">
+
+			</pre>
+		</div>
+		<div class="col-sm p-1">
+			<h6>CSS</h6>
+			<pre class="css">
+
+			</pre>
+		</div>
+	</div>
+
+
+
+
+
+
+<script src="sass.js"></script>
+<script src="../dist/fscss.js"></script>
+<script>
+	let sass = new Sass();
+	let style = document.createElement("style");
+	document.head.appendChild(style);
+	let f = new fscss({
+		array_class_exclude:['row','col-sm','p-1','m-3'],
+		progressive_sizes:[576,992,1200],
+		key_save_css:'F5',
+		show_save_button:true,
+		get_fscss:()=>document.querySelector(".fscss").innerText,
+		set_fscss:(fscss)=>{
+			document.querySelector(".fscss").innerText = fscss;
+			},
+		set_scss:(scss)=>{
+			document.querySelector(".scss").innerText = scss;
+			sass.compile(scss, function(result) {
+				document.querySelector(".css").innerText = result.text;
+				style.innerText = result.text;
+				});
+			//document.querySelectorAll("*").forEach((e)=>{
+			//	e.removeAttribute('style');
+			//	e.dataset.mutation=0;
+			//	});
+			}
+		}
+		);
+	f.save();
+</script>
+</body>
+</html>

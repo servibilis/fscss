@@ -1,0 +1,37 @@
+.c1 {
+  padding: 10px;
+  --stop:1;
+}
+
+.c1 .c2 {
+  margin: 20px;
+}
+
+.c1 .c2 .c3 {
+  line-height: 1.5;
+}
+
+.c1 strong {
+  --to_root:1;
+  line-height: 2;
+  font-size: 24px;
+  color: blue;
+}
+
+@media (min-width: 576px) {
+  .c1 {
+    padding: 20px;
+  }
+}
+
+@media (min-width: 992px) {
+  .c1 {
+    padding: 30px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .c1 {
+    padding: 40px;
+  }
+}
