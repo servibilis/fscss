@@ -3,8 +3,10 @@ Allows you to save changes to css styles in Developer Tools to a remote server a
 
 After making changes to Styles in element.style or in the properties of classes (only those that are in the file we are working with) by pressing F6 (by default) or the save button, the styles are saved.
 
+![](examples/remote_save/example.gif)
+
 ## Demo (example)
-Here's the [demo](https://servibilis.github.io/fscss/example/index.html).
+Here's the [demo](https://servibilis.github.io/fscss/examples/all_in_js/index.html).
 
 ## Progressive enhancement / graceful degradation
 The value of the properties can be specified in the form:
@@ -203,7 +205,7 @@ for everything to work, you need to specify a .c2 value for --add_tag distinct f
 	}
 ```
 ## How to use
-Here is an example code and [demo page](https://servibilis.github.io/fscss/example/index.html).
+Here is an example code and [demo page](https://servibilis.github.io/fscss/examples/all_in_js/index.html).
 ```javascript
 <script src="../dist/fscss.js"></script>
 <script>
