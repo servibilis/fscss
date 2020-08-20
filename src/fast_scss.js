@@ -59,9 +59,11 @@ export default class fscss{
 	 * create array for create element selector, work recursive 
 	 */
 	static getSelectorForElement(e,array_class_exclude=[],prevsel=[],recursive=true,to_root=false){
-
+		if(e==null) {
+			return prevsel
+			}
 		// debugger;
-		let compStyle = window.getComputedStyle(e);
+		// let compStyle = window.getComputedStyle(e);
 
 		if(to_root==false&&prevsel.length==0){
 			to_root=parseInt(fscss.getCustomProp(e,'--to_root'))>0;
@@ -78,7 +80,6 @@ export default class fscss{
 				return fscss.getSelectorForElement(e.parentElement,array_class_exclude,prevsel,recursive,to_root);
 				}
 			}
-
 
 		let prefix = fscss.getCustomProp(e,'--prefix');
 		let suffix = fscss.getCustomProp(e,'--suffix');
@@ -421,36 +422,38 @@ export default class fscss{
 		for(let i=0;i<document.styleSheets.length;i++){
 			let sheet = document.styleSheets[i];
 			if(typeof this.Sheets[i] !="undefined"){
-				for( let j in sheet.rules ){
-					let selector = sheet.rules[j].selectorText;
-					if(typeof selector=="undefined"){
-						continue;
-						}
-					let el = fscss.getElementBySelector(new_fscss,selector.split(/\s+/),0);
-					if(el!==false){
-						let oldCssText = this.Sheets[i][selector];
-						if(typeof oldCssText !="undefined"){
-							let newCssText = sheet.rules[j].style.cssText;
-							if(oldCssText!=newCssText){
-								oldCssText = parser.scss_to_array(oldCssText);
-								newCssText = parser.scss_to_array(newCssText);
-								let changedStyles = {};
-								let ln = 0;
-								for(let prop in newCssText.style){
-									if(newCssText.style[prop]!=oldCssText.style[prop]){
-										changedStyles[prop] = newCssText.style[prop];
-										ln+=1;
+				try{
+					for( let j in sheet.rules ){
+						let selector = sheet.rules[j].selectorText;
+						if(typeof selector=="undefined"){
+							continue;
+							}
+						let el = fscss.getElementBySelector(new_fscss,selector.split(/\s+/),0);
+						if(el!==false){
+							let oldCssText = this.Sheets[i][selector];
+							if(typeof oldCssText !="undefined"){
+								let newCssText = sheet.rules[j].style.cssText;
+								if(oldCssText!=newCssText){
+									oldCssText = parser.scss_to_array(oldCssText);
+									newCssText = parser.scss_to_array(newCssText);
+									let changedStyles = {};
+									let ln = 0;
+									for(let prop in newCssText.style){
+										if(newCssText.style[prop]!=oldCssText.style[prop]){
+											changedStyles[prop] = newCssText.style[prop];
+											ln+=1;
+											}
 										}
-									}
-								if(ln>0){
-									for(let prop in changedStyles){
-										el.style[prop] = changedStyles[prop];
+									if(ln>0){
+										for(let prop in changedStyles){
+											el.style[prop] = changedStyles[prop];
+											}
 										}
 									}
 								}
 							}
 						}
-					}
+					}catch{}
 				}
 			}
 		// apply style mutations
