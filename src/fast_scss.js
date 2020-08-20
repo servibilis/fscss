@@ -256,8 +256,7 @@ export default class fscss{
 						this.Sheets[i][selector] = sheet.rules[j].style.cssText;
 						}
 					}
-				} catch (error) {
-					console.error(error);
+				} catch {
 				}
 			}
 		// console.log( this.Sheets );
