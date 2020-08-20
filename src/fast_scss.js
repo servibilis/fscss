@@ -249,11 +249,15 @@ export default class fscss{
 		for(let i=0;i<document.styleSheets.length;i++){
 			let sheet = document.styleSheets[i];
 			this.Sheets[i] = {};
-			for( let j in sheet.rules ){
-				let selector = sheet.rules[j].selectorText;
-				if(typeof selector!="undefined"){
-					this.Sheets[i][selector] = sheet.rules[j].style.cssText;
+			try{
+				for( let j in sheet.rules ){
+					let selector = sheet.rules[j].selectorText;
+					if(typeof selector!="undefined"){
+						this.Sheets[i][selector] = sheet.rules[j].style.cssText;
+						}
 					}
+				} catch (error) {
+					console.error(error);
 				}
 			}
 		// console.log( this.Sheets );
